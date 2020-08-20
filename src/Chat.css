@@ -40,7 +40,7 @@
   overflow: scroll;
 }
 
-.chat__reciever {
+.chat__message.chat__reciever {
   margin-left: auto;
   background-color: #dcf8c6;
 }
