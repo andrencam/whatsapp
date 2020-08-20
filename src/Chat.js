@@ -14,6 +14,7 @@ import "./Chat.css";
 import db from "./firebase";
 
 function Chat() {
+  const [messages, setMessages] = useState([]);
   const [seed, setSeed] = useState("");
   const [input, setInput] = useState("");
   const { roomId } = useParams();
@@ -24,6 +25,13 @@ function Chat() {
       db.collection("rooms")
         .doc(roomId)
         .onSnapshot((snapshot) => setRoomName(snapshot.data().name));
+      db.collection("rooms")
+        .doc(roomId)
+        .collection("messages")
+        .orderBy("timestamp", "asc")
+        .onSnapshot((snapshot) =>
+          setMessages(snapshot.docs.map((doc) => doc.data()))
+        );
     }
   }, [roomId]);
 
@@ -58,14 +66,18 @@ function Chat() {
       </div>
 
       <div className="chat__body">
-        <p
-          className={`chat__message ${true && "chat__reciever"}
+        {messages.map((message) => (
+          <p
+            className={`chat__message ${true && "chat__reciever"}
           `}
-        >
-          <span className="chat__name">Andre</span>
-          Hey guys
-          <span className="chat__timestamp">3:52pm</span>
-        </p>
+          >
+            <span className="chat__name">{message.name}</span>
+            {message.message}
+            <span className="chat__timestamp">
+              {new Date(message.timestamp?.toDate()).toUTCString()}
+            </span>
+          </p>
+        ))}
       </div>
 
       <div className="chat__footer">
